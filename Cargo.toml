@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 macroquad = "0.4"
+rapier2d = { version = "0.22", features = [ "simd-stable" ] }

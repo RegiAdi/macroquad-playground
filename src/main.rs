@@ -13,17 +13,30 @@ async fn main() {
 
     // create the ground
     let collider = ColliderBuilder::cuboid(100.0, 20.0)
-        .translation(vector![100.0, 500.0])
+        .translation(vector![200.0, 500.0])
         .build();
     let ground_handle = collider_set.insert(collider);
 
+    // create another ground
+    let collider = ColliderBuilder::cuboid(100.0, 20.0)
+        .translation(vector![400.0, 400.0])
+        .build();
+    let ground_handle_2 = collider_set.insert(collider);
+
     // create the bouncing ball
     let rigid_body = RigidBodyBuilder::dynamic()
-        .translation(vector![100.0, 100.0])
+        .translation(vector![150.0, 100.0])
         .build();
     let collider = ColliderBuilder::ball(30.0).restitution(1.0).build();
     let ball_body_handle = rigid_body_set.insert(rigid_body);
     collider_set.insert_with_parent(collider, ball_body_handle, &mut rigid_body_set);
+
+    let rigid_body = RigidBodyBuilder::dynamic()
+        .translation(vector![450.0, 50.0])
+        .build();
+    let collider = ColliderBuilder::ball(50.0).restitution(1.5).build();
+    let ball_body_handle_2 = rigid_body_set.insert(rigid_body);
+    collider_set.insert_with_parent(collider, ball_body_handle_2, &mut rigid_body_set);
 
     // create other structures necessary for the simulation
     let gravity = vector![0.0, 100.0];
@@ -57,7 +70,9 @@ async fn main() {
         );
 
         let ball_body = &rigid_body_set[ball_body_handle];
+        let ball_body_2 = &rigid_body_set[ball_body_handle_2];
         let ground = &collider_set[ground_handle];
+        let ground_2 = &collider_set[ground_handle_2];
         //println!(
         //    "Ball altitude: x:{} y:{}", 
         //    ball_body.translation().x,
@@ -111,9 +126,28 @@ async fn main() {
             RED
         );
 
+        draw_circle(
+            ball_body_2.translation().x, 
+            ball_body_2.translation().y, 
+            50.0, 
+            ORANGE
+        );
+
         draw_rectangle(
             ground.translation().x - 100.0, 
-            ground.translation().y - 20.0, 100.0, 20.0 * 2.0, GREEN);
+            ground.translation().y - 20.0, 
+            100.0 * 2.0, 
+            20.0 * 2.0, 
+            GREEN
+        );
+
+        draw_rectangle(
+            ground_2.translation().x - 100.0, 
+            ground_2.translation().y - 20.0, 
+            100.0 * 2.0, 
+            20.0 * 2.0, 
+            BLUE
+        );
 
         next_frame().await;
     }

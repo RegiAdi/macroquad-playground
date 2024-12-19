@@ -81,26 +81,13 @@ async fn main() {
     // create the ground
     ground.collider_handle = Some(game.collider_set.insert(ground.collider));
 
-    // create another ground
-    let collider = ColliderBuilder::cuboid(100.0, 20.0)
-        .translation(vector![400.0, 400.0])
-        .build();
-    let ground_handle_2 = game.collider_set.insert(collider);
-
+    // create the ball
     ball.rigid_body_handle = Some(game.rigid_body_set.insert(ball.rigid_body));
     game.collider_set.insert_with_parent(
         ball.collider, 
         ball.rigid_body_handle.expect("Empty RigidBodyHandle"), 
         &mut game.rigid_body_set
     );
-
-    // create another bouncing ball
-    let rigid_body = RigidBodyBuilder::dynamic()
-        .translation(vector![420.0, 100.0])
-        .build();
-    let collider = ColliderBuilder::ball(50.0).restitution(1.0).build();
-    let ball_body_handle_2 = game.rigid_body_set.insert(rigid_body);
-    game.collider_set.insert_with_parent(collider, ball_body_handle_2, &mut game.rigid_body_set);
 
     loop {
         game.physics_pipeline.step(
@@ -120,9 +107,7 @@ async fn main() {
         );
 
         ball.rigid_body = game.rigid_body_set[ball.rigid_body_handle.expect("Empty RigidBodyHandle")].clone();
-        let ball_body_2 = &game.rigid_body_set[ball_body_handle_2];
         ground.collider = game.collider_set[ground.collider_handle.expect("Empty ColliderBodyHandle")].clone();
-        let ground_2 = &game.collider_set[ground_handle_2];
 
         clear_background(GRAY);
 
@@ -153,27 +138,12 @@ async fn main() {
             RED
         );
 
-        draw_circle(
-            ball_body_2.translation().x, 
-            ball_body_2.translation().y, 
-            50.0, 
-            ORANGE
-        );
-
         draw_rectangle(
             ground.collider.translation().x - ground.size.x, 
             ground.collider.translation().y - ground.size.y, 
             ground.size.x * 2.0, 
             ground.size.y * 2.0, 
             GREEN
-        );
-
-        draw_rectangle(
-            ground_2.translation().x - 100.0, 
-            ground_2.translation().y - 20.0, 
-            100.0 * 2.0, 
-            20.0 * 2.0, 
-            BLUE
         );
 
         set_default_camera();
